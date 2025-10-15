@@ -223,11 +223,155 @@ Made with ❤️ and TensorFlow
 
 Question and Answers
 
-1.	Describe your price prediction model in detail and explain the reasons for selecting this model.
-ans LSTM (Long Short-Term Memory Network)
+# 📈 Price Forecasting Using LSTM
 
-Description: LSTM is a type of recurrent neural network (RNN) designed to learn long-term dependencies in sequential data. It consists of memory cells that can retain information for long periods, making it ideal for time series with complex temporal patterns.
+This project demonstrates how to forecast monthly prices using a **Long Short-Term Memory (LSTM)** neural network. The model is trained on historical monthly price data and predicts future price trends to help businesses make informed decisions.
 
-Reason for selection: Price data often contains non-linear trends and long-term dependencies. LSTM can model these complex patterns better than traditional statistical models.
+---
 
-2.
+## 1. Project Overview
+
+- **Objective:** Predict future monthly prices using historical data.  
+- **Dataset:** Contains historical monthly average prices.  
+- **Approach:** LSTM model for time series forecasting due to its ability to capture temporal dependencies and trends.  
+- **Tools & Libraries:** Python, Pandas, NumPy, Matplotlib, Scikit-learn, TensorFlow/Keras, Django (for deployment).  
+
+---
+
+## 2. Price Prediction Model
+
+**Model Details:**
+
+- **Architecture:**  
+  - 2 LSTM layers (64 units each)  
+  - Dense layer (32 units, ReLU activation)  
+  - Output layer (1 unit for predicted price)
+- **Input:** Last 12 months of prices (time-step = 12)  
+- **Normalization:** MinMaxScaler (0–1) applied to prices  
+- **Loss Function:** Mean Squared Error (MSE)  
+- **Optimizer:** Adam  
+- **Epochs:** 60  
+- **Batch Size:** 8  
+
+**Reason for Choosing LSTM:**  
+LSTM networks are ideal for time series data because they can **capture long-term dependencies** and **seasonal patterns**, which traditional models like ARIMA may not handle effectively in non-linear scenarios.
+
+---
+
+## 3. Model Performance Evaluation
+
+### **Formulas Used**
+
+**1. Mean Absolute Error (MAE)**  
+$$
+MAE = \frac{1}{n} \sum_{i=1}^{n} |y_i - \hat{y}_i|
+$$
+
+**2. Root Mean Squared Error (RMSE)**  
+$$
+RMSE = \sqrt{\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2}
+$$
+
+**3. Approximate Accuracy**  
+$$
+Accuracy \approx 100 - \frac{MAE}{\text{mean of actual values}} \times 100
+$$
+
+### **Test Set Metrics**
+
+| Metric | Value |
+|--------|-------|
+| MAE    | 1822.90 |
+| RMSE   | 2880.21 |
+| Approx. Accuracy | 83.63% |
+
+**Visualization:**
+
+![Actual vs Predicted Prices](path_to_plot_image.png)  
+
+The plot shows that the LSTM model captures overall trends and seasonal patterns in the price data effectively.
+
+---
+
+## 4. Suggested Actions Based on Predicted Prices
+
+- **Inventory Management:** Adjust stock levels based on predicted price trends.  
+- **Pricing Strategy:** Update product prices proactively to maintain margins.  
+- **Procurement Planning:** Negotiate long-term supplier contracts or delay purchases based on forecasts.  
+- **Financial Planning:** Forecast revenue and cash flow more accurately.  
+- **Marketing & Sales Strategy:** Plan campaigns or discounts according to predicted trends.  
+- **Strategic Decisions:** Support expansion, product line optimization, or market entry/exit decisions.
+
+---
+
+## 5. Evaluating the Effectiveness of Actions
+
+- Compare predicted vs actual prices to check forecast accuracy.  
+- Monitor revenue, profit margins, and inventory turnover.  
+- Calculate ROI on actions taken using model predictions.  
+- Analyze operational efficiency and cost savings.
+
+---
+
+## 6. Deploying the Model Using Django
+
+1. **Save the model and scaler:**
+```python
+model.save("price_forecast_model.h5")
+import joblib
+joblib.dump(scaler, "scaler.save")
+Set up Django project and app (price_predictor).
+
+Load the model in Django (model_service.py):
+
+python
+Copy code
+from tensorflow.keras.models import load_model
+import joblib
+
+model = load_model("price_forecast_model.h5")
+scaler = joblib.load("scaler.save")
+Create views or API endpoints to serve predictions.
+
+7. Integrating Model for Real-Time Predictions
+Workflow:
+
+Frontend collects the last 12 months of price data.
+
+Backend preprocesses data (scaling) and feeds it to the LSTM model.
+
+Predicted prices are post-processed (inverse scaling) and returned.
+
+Results can be visualized in charts for better decision-making.
+
+Example API Endpoint:
+
+python
+Copy code
+from django.http import JsonResponse
+from .model_service import model, scaler
+import numpy as np
+
+def predict_price(request):
+    input_data = np.array(request.GET.getlist("data")).reshape(1, 12, 1)
+    scaled_input = scaler.transform(input_data.reshape(-1,1)).reshape(1,12,1)
+    prediction = model.predict(scaled_input)
+    predicted_price = scaler.inverse_transform(prediction)
+    return JsonResponse({"predicted_price": float(predicted_price)})
+8. Monitoring the Model in Production
+Track Performance: Use MAE, RMSE, and accuracy metrics on new data.
+
+Detect Model Drift: Monitor input data distribution and prediction errors.
+
+Update Model: Retrain periodically with new data to maintain accuracy.
+
+Alerts & Automation: Set thresholds for performance degradation and automate retraining with Celery or similar tools.
+
+✅ Summary: Continuous monitoring ensures reliable predictions, early detection of drift, and informed business decision-making.
+
+9. Future Work
+Explore hybrid models combining LSTM with ARIMA for improved accuracy.
+
+Deploy interactive web dashboards for dynamic visualization of predictions.
+
+Automate data ingestion and retraining pipelines for fully real-time forecasting.        

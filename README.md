@@ -219,3 +219,15 @@ The project includes several visualizations:
 <div align="center">
 Made with ❤️ and TensorFlow
 </div>
+
+
+Question and Answers
+
+1.	Describe your price prediction model in detail and explain the reasons for selecting this model.
+ans LSTM (Long Short-Term Memory Network)
+
+Description: LSTM is a type of recurrent neural network (RNN) designed to learn long-term dependencies in sequential data. It consists of memory cells that can retain information for long periods, making it ideal for time series with complex temporal patterns.
+
+Reason for selection: Price data often contains non-linear trends and long-term dependencies. LSTM can model these complex patterns better than traditional statistical models.
+
+2.
